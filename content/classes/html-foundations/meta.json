@@ -1,0 +1,16 @@
+{
+  "title": "HTML Foundations",
+  "description": "A practical starter class for structuring clean web pages.",
+  "updated": "2026-09-18",
+  "level": "Beginner",
+  "tasks": [
+    {
+      "title": "Build the document shell",
+      "goal": "Create a valid HTML document."
+    },
+    {
+      "title": "Style the page",
+      "goal": "Use CSS without breaking the markup."
+    }
+  ]
+}
