@@ -5,13 +5,18 @@
   "description": "Portfolio, learning resources, classes and practical web development notes from Chattogram, Bangladesh.",
   "locale": "en-BD",
   "timezone": "Asia/Dhaka",
-  "siteUrl": "",
+  "siteUrl": "https://obaidhqbd.github.io/Portfulio-test",
   "location": "Chattogram, Bangladesh",
   "role": "Web Development Mentor · Full-Stack Developer",
   "tagline": "Build useful things. Learn by shipping.",
-  "focus": ["Web Development", "Full-Stack Engineering", "Data & Automation", "Mentorship"],
+  "focus": [
+    "Web Development",
+    "Full-Stack Engineering",
+    "Data & Automation",
+    "Mentorship"
+  ],
   "social": {
-    "github": "",
+    "github": "https://github.com/obaidhqbd",
     "linkedin": "",
     "youtube": "",
     "facebook": ""
