@@ -1,0 +1,24 @@
+{
+  "siteName": "Mohammed Obaidul Hoque",
+  "shortName": "MOH",
+  "title": "Mohammed Obaidul Hoque — Web Development Mentor & Full-Stack Developer",
+  "description": "Portfolio, learning resources, classes and practical web development notes from Chattogram, Bangladesh.",
+  "locale": "en-BD",
+  "timezone": "Asia/Dhaka",
+  "siteUrl": "",
+  "location": "Chattogram, Bangladesh",
+  "role": "Web Development Mentor · Full-Stack Developer",
+  "tagline": "Build useful things. Learn by shipping.",
+  "focus": ["Web Development", "Full-Stack Engineering", "Data & Automation", "Mentorship"],
+  "social": {
+    "github": "",
+    "linkedin": "",
+    "youtube": "",
+    "facebook": ""
+  },
+  "email": "",
+  "seo": {
+    "themeColor": "#0a0d12",
+    "ogImage": "/og-card.svg"
+  }
+}
