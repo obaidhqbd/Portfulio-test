@@ -1,29 +1,17 @@
 {
   "siteName": "Mohammed Obaidul Hoque",
   "shortName": "MOH",
-  "title": "Mohammed Obaidul Hoque — Web Development Mentor & Full-Stack Developer",
-  "description": "Portfolio, learning resources, classes and practical web development notes from Chattogram, Bangladesh.",
-  "locale": "en-BD",
-  "timezone": "Asia/Dhaka",
+  "title": "Mohammed Obaidul Hoque — Web Development Mentor",
+  "description": "Web development, full-stack experiments, reusable code and hands-on learning from Chattogram, Bangladesh.",
   "siteUrl": "https://obaidhqbd.github.io/Portfulio-test",
   "location": "Chattogram, Bangladesh",
   "role": "Web Development Mentor · Full-Stack Developer",
   "tagline": "Build useful things. Learn by shipping.",
+  "github": "https://github.com/obaidhqbd",
   "focus": [
     "Web Development",
-    "Full-Stack Engineering",
-    "Data & Automation",
+    "Full-Stack",
+    "Automation",
     "Mentorship"
-  ],
-  "social": {
-    "github": "https://github.com/obaidhqbd",
-    "linkedin": "",
-    "youtube": "",
-    "facebook": ""
-  },
-  "email": "",
-  "seo": {
-    "themeColor": "#0a0d12",
-    "ogImage": "/og-card.svg"
-  }
+  ]
 }

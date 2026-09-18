@@ -1,1 +1,1 @@
-document.querySelector('#demo')?.addEventListener('click',()=>document.querySelector('.card p').textContent='Great — you just changed the behaviour with JavaScript.');
+document.querySelector('#btn').onclick=()=>document.querySelector('#out').textContent='Nice. The three files are connected.';

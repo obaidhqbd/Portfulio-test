@@ -1,1 +1,0 @@
-const C='mohq-v1';self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(x=>x||fetch(e.request).then(r=>{if(r.ok){let c=r.clone();caches.open(C).then(k=>k.put(e.request,c))}return r}))))

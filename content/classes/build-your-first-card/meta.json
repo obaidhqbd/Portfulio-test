@@ -1,1 +1,20 @@
-{"title":"Build Your First Card","description":"A beginner-friendly HTML, CSS and JavaScript exercise with live preview.","level":"Beginner","duration":"30–45 min","tasks":[{"title":"Understand structure","goal":"Identify HTML elements."},{"title":"Style the card","goal":"Change spacing and visual hierarchy."},{"title":"Add interaction","goal":"Make the button change the page."},{"title":"Polish","goal":"Test your result."}]}
+{
+  "title": "Build Your First Card",
+  "description": "A beginner project for creating a polished responsive card with HTML, CSS and JavaScript.",
+  "level": "Beginner",
+  "category": "Web UI",
+  "tasks": [
+    {
+      "title": "Read the structure",
+      "goal": "Identify the role of HTML, CSS and JS."
+    },
+    {
+      "title": "Edit the design",
+      "goal": "Change spacing, type and color."
+    },
+    {
+      "title": "Preview the result",
+      "goal": "Use the connected preview to test your changes."
+    }
+  ]
+}
