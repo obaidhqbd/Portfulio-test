@@ -1,0 +1,15 @@
+{
+  "name": "mohoque-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static GitHub Pages portfolio, blog and student learning workspace.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/validate.mjs",
+    "dev": "node scripts/dev.mjs"
+  }
+}
