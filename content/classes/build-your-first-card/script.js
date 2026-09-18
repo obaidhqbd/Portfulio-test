@@ -1,0 +1,1 @@
+document.querySelector('#demo')?.addEventListener('click',()=>document.querySelector('.card p').textContent='Great — you just changed the behaviour with JavaScript.');
