@@ -1,17 +1,25 @@
 {
   "siteName": "Mohammed Obaidul Hoque",
   "shortName": "MOH",
-  "title": "Mohammed Obaidul Hoque — Web Development Mentor",
-  "description": "Web development, full-stack experiments, reusable code and hands-on learning from Chattogram, Bangladesh.",
+  "title": "Mohammed Obaidul Hoque — Web Developer & Learning Platform Builder",
+  "description": "A premium personal portfolio, coding library and hands-on learning platform for practical web development.",
   "siteUrl": "https://obaidhqbd.github.io/Portfulio-test",
   "location": "Chattogram, Bangladesh",
-  "role": "Web Development Mentor · Full-Stack Developer",
+  "role": "Web Developer · Learning Platform Builder",
   "tagline": "Build useful things. Learn by shipping.",
   "github": "https://github.com/obaidhqbd",
-  "focus": [
-    "Web Development",
-    "Full-Stack",
-    "Automation",
-    "Mentorship"
+  "focus": ["Web Development", "Data Analytics", "Automation", "Digital Products"],
+  "projects": [
+    {"title":"Portfolio Learning Platform","description":"A GitHub-driven portfolio that turns projects, lessons and reusable code into a browser-first learning experience.","stack":["HTML","CSS","JavaScript","Node.js","GitHub Actions"]},
+    {"title":"Browser Coding Workspace","description":"A lightweight static IDE that connects multiple project files into one editable live preview.","stack":["File Explorer","Editor","Preview","ZIP Export"]},
+    {"title":"Content Automation Pipeline","description":"A build pipeline that discovers content, derives metadata, validates projects and publishes a complete static site.","stack":["Content folders","Metadata fallback","Validation","Pages"]}
+  ],
+  "skills": [
+    {"name":"HTML & Semantic UI","level":"Advanced","value":92},
+    {"name":"CSS & Responsive Design","level":"Advanced","value":90},
+    {"name":"JavaScript","level":"Advanced","value":88},
+    {"name":"Git & GitHub Automation","level":"Advanced","value":86},
+    {"name":"Data Analytics","level":"Working","value":72},
+    {"name":"Digital Product Thinking","level":"Working","value":74}
   ]
 }
