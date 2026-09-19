@@ -1,8 +1,143 @@
-import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import zlib from 'node:zlib';
-export const ROOT=process.cwd(),CONTENT=path.join(ROOT,'content'),DIST=path.join(ROOT,'dist');
-export const walk=d=>{if(!fs.existsSync(d))return[];let a=[];for(const e of fs.readdirSync(d,{withFileTypes:true})){if(e.name.startsWith('.'))continue;const p=path.join(d,e.name);e.isDirectory()?a.push(...walk(p)):a.push(p)}return a};
-export const ensure=d=>fs.mkdirSync(d,{recursive:true});export const read=f=>fs.readFileSync(f,'utf8');export const json=(f,d={})=>{try{return JSON.parse(read(f))}catch{return d}};export const slug=s=>String(s).replace(/\.(zip|md)$/i,'').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().toLowerCase().replace(/\s+/g,'-').replace(/-+/g,'-')||'item';export const title=s=>slug(s).replace(/-/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
-export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function zip(dir){const files=walk(dir);let parts=[],central=[],off=0;const u16=n=>{let b=Buffer.alloc(2);b.writeUInt16LE(n);return b},u32=n=>{let b=Buffer.alloc(4);b.writeUInt32LE(n>>>0);return b};const crc=b=>{let c=~0;for(const x of b){c^=x;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0)}return (~c)>>>0};for(const f of files){const name=Buffer.from(path.relative(dir,f).replaceAll(path.sep,'/')),data=fs.readFileSync(f),h=Buffer.concat([u32(0x4034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc(data)),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);parts.push(h);central.push(Buffer.concat([u32(0x2014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc(data)),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off),name]));off+=h.length}const c=Buffer.concat(central);return Buffer.concat([...parts,c,u32(0x6054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(c.length),u32(off),u16(0)])}
-export function encrypt(buf,pwd){const salt=crypto.randomBytes(16),iv=crypto.randomBytes(12),iter=210000,key=crypto.pbkdf2Sync(pwd,salt,iter,32,'sha256'),c=crypto.createCipheriv('aes-256-gcm',key,iv),out=Buffer.concat([c.update(buf),c.final()]),tag=c.getAuthTag(),h=Buffer.from(JSON.stringify({v:1,iter,salt:salt.toString('base64'),iv:iv.toString('base64')}));let n=Buffer.alloc(4);n.writeUInt32LE(h.length);return Buffer.concat([n,h,out,tag])}
-export function extractZip(buf,out){const b=Buffer.from(buf);let e=b.length-22;while(e>=0&&b.readUInt32LE(e)!==0x06054b50)e--;if(e<0)throw Error('Bad ZIP end record');const count=b.readUInt16LE(e+10),cd=b.readUInt32LE(e+16);let p=cd;for(let i=0;i<count;i++){if(b.readUInt32LE(p)!==0x02014b50)throw Error('Bad ZIP central directory');const method=b.readUInt16LE(p+10),cs=b.readUInt32LE(p+20),nl=b.readUInt16LE(p+28),el=b.readUInt16LE(p+30),cl=b.readUInt16LE(p+32),off=b.readUInt32LE(p+42),name=b.toString('utf8',p+46,p+46+nl).replaceAll('\\','/');p+=46+nl+el+cl;if(!name||name.endsWith('/'))continue;const safe=path.posix.normalize(name);if(safe.startsWith('../')||safe==='..'||safe.startsWith('/'))throw Error('Unsafe ZIP path');if(b.readUInt32LE(off)!==0x04034b50)throw Error('Bad ZIP local header');const lnl=b.readUInt16LE(off+26),lel=b.readUInt16LE(off+28),start=off+30+lnl+lel,data=b.subarray(start,start+cs);const outData=method===0?data:method===8?zlib.inflateRawSync(data):null;if(!outData)throw Error('Unsupported ZIP compression');const dest=path.join(out,safe);ensure(path.dirname(dest));fs.writeFileSync(dest,outData)}}
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import zlib from 'node:zlib';
+
+export const ROOT = process.cwd();
+export const CONTENT = path.join(ROOT, 'content');
+export const DIST = path.join(ROOT, 'dist');
+
+export const walk = (dir) => {
+  if (!fs.existsSync(dir)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith('.')) continue;
+    const p = path.join(dir, entry.name);
+    entry.isDirectory() ? files.push(...walk(p)) : files.push(p);
+  }
+  return files;
+};
+
+export const ensure = (dir) => fs.mkdirSync(dir, { recursive: true });
+export const read = (file) => fs.readFileSync(file, 'utf8');
+export const json = (file, fallback = {}) => { try { return JSON.parse(read(file)); } catch { return fallback; } };
+
+export const slug = (value) => String(value)
+  .replace(/\.(zip|md)$/i, '')
+  .normalize('NFKD')
+  .replace(/[^\w\s-]/g, '')
+  .trim()
+  .toLowerCase()
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-') || 'item';
+
+export const title = (value) => slug(value).replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+
+export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[c]));
+
+export const parseFrontMatter = (text) => {
+  const match = String(text).match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
+  if (!match) return { meta: {}, body: String(text) };
+  const meta = {};
+  for (const line of match[1].split('\n')) {
+    const index = line.indexOf(':');
+    if (index < 1) continue;
+    meta[line.slice(0,index).trim()] = line.slice(index + 1).trim().replace(/^['"]|['"]$/g,'');
+  }
+  return { meta, body: String(text).slice(match[0].length) };
+};
+
+export const markdownToHtml = (markdown) => {
+  const escaped = esc(markdown).replace(/\r\n/g,'\n');
+  const fence = String.fromCharCode(96).repeat(3);
+  return escaped.split(/\n\s*\n/).map((block) => {
+    block = block.trim();
+    if (!block) return '';
+    if (block.startsWith(fence)) {
+      const code = block.slice(fence.length).replace(/^\w*\n?/,'').replace(new RegExp(fence + '$'),'');
+      return '<pre class="md-code"><code>' + code + '</code></pre>';
+    }
+    if (/^### /.test(block)) return '<h3>' + block.slice(4) + '</h3>';
+    if (/^## /.test(block)) return '<h2>' + block.slice(3) + '</h2>';
+    if (/^# /.test(block)) return '<h1>' + block.slice(2) + '</h1>';
+    if (/^- /.test(block)) return '<ul>' + block.split('\n').filter(Boolean).map((x) => '<li>' + x.replace(/^-\s+/,'') + '</li>').join('') + '</ul>';
+    const inline = block
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(new RegExp(String.fromCharCode(96) + '(.+?)' + String.fromCharCode(96),'g'),'<code>$1</code>');
+    return '<p>' + inline.replace(/\n/g,'<br>') + '</p>';
+  }).join('');
+};
+
+export const zip = (dir) => {
+  const files = walk(dir);
+  const parts = [];
+  const central = [];
+  let offset = 0;
+  const u16 = (n) => { const b = Buffer.alloc(2); b.writeUInt16LE(n); return b; };
+  const u32 = (n) => { const b = Buffer.alloc(4); b.writeUInt32LE(n); return b; };
+  const crc32 = (buffer) => {
+    let c = ~0;
+    for (const byte of buffer) {
+      c ^= byte;
+      for (let i = 0; i < 8; i++) c = (c >>> 1) ^ ((c & 1) ? 0xedb88320 : 0);
+    }
+    return (~c) >>> 0;
+  };
+  for (const file of files) {
+    const name = Buffer.from(path.relative(dir,file).replaceAll(path.sep,'/'));
+    const data = fs.readFileSync(file);
+    const crc = crc32(data);
+    const local = Buffer.concat([u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);
+    parts.push(local);
+    central.push(Buffer.concat([u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]));
+    offset += local.length;
+  }
+  const directory = Buffer.concat(central);
+  return Buffer.concat([...parts,directory,u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(directory.length),u32(offset),u16(0)]);
+};
+
+export const encrypt = (buffer,password) => {
+  const salt = crypto.randomBytes(16), iv = crypto.randomBytes(12), iterations = 210000;
+  const key = crypto.pbkdf2Sync(password,salt,iterations,32,'sha256');
+  const cipher = crypto.createCipheriv('aes-256-gcm',key,iv);
+  const body = Buffer.concat([cipher.update(buffer),cipher.final()]);
+  const tag = cipher.getAuthTag();
+  const header = Buffer.from(JSON.stringify({v:1,iter:iterations,salt:salt.toString('base64'),iv:iv.toString('base64')}));
+  const length = Buffer.alloc(4); length.writeUInt32LE(header.length);
+  return Buffer.concat([length,header,body,tag]);
+};
+
+export const extractZip = (buffer,outputDir) => {
+  const b = Buffer.from(buffer);
+  let end = b.length - 22;
+  while (end >= 0 && b.readUInt32LE(end) !== 0x06054b50) end--;
+  if (end < 0) throw Error('Bad ZIP end record.');
+  const count = b.readUInt16LE(end + 10), centralOffset = b.readUInt32LE(end + 16);
+  let position = centralOffset;
+  for (let i = 0; i < count; i++) {
+    if (b.readUInt32LE(position) !== 0x02014b50) throw Error('Bad ZIP central directory.');
+    const method = b.readUInt16LE(position + 10);
+    const compressedSize = b.readUInt32LE(position + 20);
+    const nameLength = b.readUInt16LE(position + 28);
+    const extraLength = b.readUInt16LE(position + 30);
+    const commentLength = b.readUInt16LE(position + 32);
+    const localOffset = b.readUInt32LE(position + 42);
+    const name = b.toString('utf8',position + 46,position + 46 + nameLength).replaceAll('\\','/');
+    position += 46 + nameLength + extraLength + commentLength;
+    if (!name || name.endsWith('/')) continue;
+    const safe = path.posix.normalize(name);
+    if (safe.startsWith('../') || safe === '..' || safe.startsWith('/')) throw Error('Unsafe ZIP path.');
+    if (b.readUInt32LE(localOffset) !== 0x04034b50) throw Error('Bad ZIP local header.');
+    const localNameLength = b.readUInt16LE(localOffset + 26), localExtraLength = b.readUInt16LE(localOffset + 28);
+    const start = localOffset + 30 + localNameLength + localExtraLength;
+    const data = b.subarray(start,start + compressedSize);
+    const output = method === 0 ? data : method === 8 ? zlib.inflateRawSync(data) : null;
+    if (!output) throw Error('Unsupported ZIP compression.');
+    const destination = path.join(outputDir,safe);
+    ensure(path.dirname(destination));
+    fs.writeFileSync(destination,output);
+  }
+};
