@@ -30,6 +30,8 @@ Set the GitHub Actions secret CLASS_PACKAGE_PASSWORD to encrypt class ZIP packag
 
 This is content protection for a static GitHub Pages site, not server-side authentication. The password is never written into frontend source.
 
+The Pages build now fails if class packages exist and CLASS_PACKAGE_PASSWORD is missing, so it cannot silently publish unencrypted ZIPs. This does not hide the original content committed under content/classes: if those files must be private, keep them in a private repository and do not publish them here. Anyone with access to a public repository can read its committed source.
+
 ## Local commands
 
 npm run check
